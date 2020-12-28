@@ -14,6 +14,8 @@ import random
 pygame.font.init()
 
 # General Display Attributes
+# edit: potentially add encompassing PhoenixGame class to hold game settings, images,
+# and player/enemy/laser lists, permitting division of objects into multiple .py files for modularization.
 WIDTH = 800
 HEIGHT = 800
 FPS = 60
