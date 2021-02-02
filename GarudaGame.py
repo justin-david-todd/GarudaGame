@@ -49,7 +49,7 @@ class GarudaGame:
         self._player_lasers = []
         self._level_sequence = []
 
-    def image(self, image_name):
+    def get_image_from_name(self, image_name):
         """
         Takes an image name and retrieves the image of that name.
         """
@@ -111,13 +111,13 @@ class GarudaGame:
 
     def set_icon(self, image_name):
         """Takes an image name and sets the icon to that image."""
-        self._icon = self.image(image_name)
-        pygame.display.set_icon(system.get_icon())
+        self._icon = self._image[image_name]
+        pygame.display.set_icon(self.get_icon())
 
     def set_caption(self, string):
         """Takes a string and sets the caption to that string"""
         self._caption = string
-        pygame.display.set_caption(system.get_caption())
+        pygame.display.set_caption(self.get_caption())
 
     def resize_window(self, width, height):
         """Takes two integers, width and height, and resizes the window to those dimensions."""
@@ -127,7 +127,7 @@ class GarudaGame:
     def set_background(self, image_name):
         """Takes an image and sets the background to that image."""
         self._background = pygame.transform.scale(self._image[image_name],
-                                                 (self._window_width, self._window_height)),
+                                                  (self._window_width, self._window_height)),
 
     def display_decor(self):
         """Displays game icon at start in corner of game window."""
