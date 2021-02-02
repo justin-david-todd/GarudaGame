@@ -2,7 +2,7 @@
 # Last Modified: 01/31/2021
 # Description: This class holds the internal settings for the GarudaGame
 #   such as window size, FPS, background, etc.
-
+# Testing changes to Title Features
 from ships import *
 
 
