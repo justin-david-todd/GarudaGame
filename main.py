@@ -55,7 +55,7 @@ def main():
         for enemy in game.get_enemies()[:]:
             enemy.move()
             # controls how often enemies randomly fire
-            if random.randrange(0, 2*game.get_fps()) == 1:
+            if random.randrange(0, 3*game.get_fps()) == 1:
                 enemy.shoot()
             enemy.cool_down()
             # enemies disappear when health reaches zero
