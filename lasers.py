@@ -35,17 +35,39 @@ class Laser:
         self._image = {
             # Laser Images = image file should be 16 x 32 pixels
             "green_blast": pygame.image.load("assets/green_blast.png"),
+            "blank": pygame.image.load("assets/Blank.png"),
             "explosion": pygame.image.load("assets/simple_explosion.png"),
-            "green_laser": pygame.image.load("assets/laser_green.png")
+            "green_laser": pygame.image.load("assets/laser_green.png"),
+            "lightning": pygame.image.load("assets/lightning blue.png"),
+            "blueShot": pygame.image.load("assets/pellet blue.png"),
+            "greenShot": pygame.image.load("assets/pellet green.png"),
+            "redShot": pygame.image.load("assets/pellet red.png"),
+            "yellowShot": pygame.image.load("assets/pellet yellow.png"),
+            "rayBlue": pygame.image.load("assets/rayBlue.png"),
+            "rayGreen": pygame.image.load("assets/rayGreen.png"),
+            "rayRed": pygame.image.load("assets/rayRed.png"),
+            "blasterGreen": pygame.image.load("assets/blasterGreen.png"),
+            "blasterRed": pygame.image.load("assets/blasterRed.png")
         }
         self._laser_type = {
             # "laser_type" : (damage, velocity, cool_down, laser_img, move_pattern)
             "green": (10, 10, 15, self._image["green_laser"], self.normal),
             "player_green": (10, -10, 15, self._image["green_blast"], self.normal),
             "explosion": (30, 10, 15, self._image["explosion"], self.delayed),
-            "explosion_zero": (0, 10, 15, self._image["explosion"], self.delayed)
-        }
+            "explosion_zero": (0, 10, 15, self._image["explosion"], self.delayed),
+            "lightning": (10, 10, 15, self._image["lightning"], self.normal),
+            "blueShot": (10, 10, 15, self._image["blueShot"], self.normal),
+            "greenShot": (10, 10, 15, self._image["greenShot"], self.normal),
+            "redShot": (10, 10, 15, self._image["redShot"], self.normal),
+            "yellowShot": (10, 10, 15, self._image["yellowShot"], self.normal),
+            "rayBlue": (10, 10, 15, self._image["rayBlue"], self.normal),
+            "rayGreen": (10, 10, 15, self._image["rayGreen"], self.normal),
+            "rayRed": (10, 10, 15, self._image["rayRed"], self.normal),
+            "blasterGreen": (10, 10, 15, self._image["blasterGreen"], self.normal),
+            "blasterRed": (10, 10, 15, self._image["blasterRed"], self.normal),
+            "blank": (0, 1000, 1000, self._image["blank"], self.normal)
 
+        }
         self._x = x
         self._y = y
         self._damage, self._velocity, self._cool_down, self._laser_img, \
@@ -60,6 +82,10 @@ class Laser:
     def get_y(self):
         """returns laser's y coordinate"""
         return self._y
+
+    def get_width(self):
+        """returns width of laser's image"""
+        return self._laser_img.get_width()
 
     def get_damage(self):
         """returns laser's damage value"""

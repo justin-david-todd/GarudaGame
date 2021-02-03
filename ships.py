@@ -25,7 +25,32 @@ class Ship:
             # TODO diversify enemy images
             "blue_baddy": pygame.image.load("assets/baddy_1.png"),
             "red_baddy": pygame.image.load("assets/baddy_2.png"),
-            "explosion": pygame.image.load("assets/simple_explosion.png")
+            "explosion": pygame.image.load("assets/simple_explosion.png"),
+            "ArrowBlue": pygame.image.load("assets/ArrowBlue.png"),
+            "ArrowGold": pygame.image.load("assets/ArrowGold.png"),
+            "ArrowPink": pygame.image.load("assets/ArrowPink.png"),
+            "ArrowRed": pygame.image.load("assets/ArrowRed.png"),
+            "ArrowStealth": pygame.image.load("assets/ArrowStealth.png"),
+            "Block": pygame.image.load("assets/Block.png"),
+            "BlueSquid": pygame.image.load("assets/BlueSquid.png"),
+            "blueSpark": pygame.image.load("assets/blusSpark.png"),
+            "CentiBlue": pygame.image.load("assets/CentiBlue.png"),
+            "CentiGreen": pygame.image.load("assets/CentiGreen.png"),
+            "CentiheadBlue": pygame.image.load("assets/CentiheadBlue.png"),
+            "CentiheadDud": pygame.image.load("assets/CentiheadDud.png"),
+            "CentiheadGreen": pygame.image.load("assets/CentiheadGreen.png"),
+            "CentiheadPanda": pygame.image.load("assets/CentiheadPanda.png"),
+            "CentiheadRed": pygame.image.load("assets/CentiheadRed.png"),
+            "FlappyBlue": pygame.image.load("assets/Flappy Blue.png"),
+            "FlappyGreen": pygame.image.load("assets/FlappyGreen.png"),
+            "FlappyRed": pygame.image.load("assets/FlappyRed.png"),
+            "FlappyStealth": pygame.image.load("assets/FlappyStealth.png"),
+            "FlappyWhite": pygame.image.load("assets/FlappyWhite.png"),
+            "GreenSpark": pygame.image.load("assets/GreenSpark.png"),
+            "hammer": pygame.image.load("assets/hammer.png"),
+            "metal_1": pygame.image.load("assets/metal_1.png"),
+            "MetalSquid": pygame.image.load("assets/MetalSquid.png"),
+            "RedMetalSquid": pygame.image.load("assets/RedMetalSquid.png")
         }
         self._x = x
         self._y = y
@@ -140,7 +165,8 @@ class Ship:
     def shoot(self):
         """if the cool_down_counter is zero, fires a laser object from the front of the ship."""
         if self._cool_down_counter <= 0:
-            laser = Laser(self._x + self.get_width()/2-8, self._y - 10, self._laser_type)
+            laser = Laser(self._x + self.get_width()/2, self._y - 10, self._laser_type)
+            laser.horizontal_move(-(laser.get_width()//2))
             self._lasers.append(laser)
             self._cool_down_counter = laser.get_cool_down()
 
@@ -170,7 +196,7 @@ class Player(Ship):
     """
 
     def __init__(self, x, y, laser_array, health):
-        super().__init__(x, y,laser_array, health)
+        super().__init__(x, y, laser_array, health)
         self._ship_img = self._image["main_ship"]
         self._laser_type = "player_green"
         self._mask = pygame.mask.from_surface(self._ship_img)
@@ -210,7 +236,33 @@ class Enemy(Ship):
         # enemy_type : (speed, movement_pattern, ship_img, laser_type, health, point_value)
         species = {
             # TODO diversify enemy types
-            "squid": (1, self.move_down, self._image["blue_baddy"], "green", 10, 10)
+            "Squid": (1, self.move_down, self._image["BlueSquid"], "blueShot", 10, 10),
+            "ArrowBlue": (1, self.move_down, self._image["ArrowBlue"], "blueShot", 10, 10),
+            "ArrowGold": (1, self.move_down, self._image["ArrowGold"], "blueShot", 10, 10),
+            "ArrowPink": (1, self.move_down, self._image["ArrowPink"], "blueShot", 10, 10),
+            "ArrowRed": (1, self.move_down, self._image["ArrowRed"], "blueShot", 10, 10),
+            "ArrowStealth": (1, self.move_down, self._image["ArrowStealth"], "blueShot", 10, 10),
+            "Block": (1, self.move_down, self._image["Block"], "blueShot", 20, 10),
+            "BlueSquid": (1, self.move_down, self._image["BlueSquid"], "blueShot", 10, 10),
+            "BlueSpark": (1, self.move_down, self._image["blueSpark"], "blueShot", 10, 10),
+            "CentiBlue": (1, self.move_down, self._image["CentiBlue"], "blueShot", 10, 10),
+            "CentiGreen": (1, self.move_down, self._image["CentiGreen"], "blueShot", 10, 10),
+            "CentiheadBlue": (1, self.move_down, self._image["CentiheadBlue"], "blueShot", 10, 10),
+            "CentiheadDud": (1, self.move_down, self._image["CentiheadDud"], "blueShot", 10, 10),
+            "CentiheadGreen": (1, self.move_down, self._image["CentiheadGreen"], "blueShot", 10, 10),
+            "CentiheadPanda": (1, self.move_down, self._image["CentiheadPanda"], "blueShot", 10, 10),
+            "CentiheadRed": (1, self.move_down, self._image["CentiheadRed"], "blueShot", 10, 10),
+            "FlappyBlue": (1, self.move_down, self._image["FlappyBlue"], "blueShot", 10, 10),
+            "FlappyGreen": (1, self.move_down, self._image["FlappyGreen"], "blueShot", 10, 10),
+            "FlappyRed": (1, self.move_down, self._image["FlappyRed"], "blueShot", 10, 10),
+            "FlappyStealth": (1, self.move_down, self._image["FlappyStealth"], "blueShot", 10, 10),
+            "FlappyWhite": (1, self.move_down, self._image["FlappyWhite"], "blueShot", 10, 10),
+            "GreenSpark": (1, self.move_down, self._image["GreenSpark"], "blueShot", 10, 10),
+            "Hammer": (1, self.move_down, self._image["hammer"], "blueShot", 10, 10),
+            "Metal1": (1, self.move_down, self._image["metal_1"], "blueShot", 10, 10),
+            "MetalSquid": (1, self.move_down, self._image["MetalSquid"], "blueShot", 10, 10),
+            "RedMetalSquid": (1, self.move_down, self._image["RedMetalSquid"], "blueShot", 10, 10)
+
         }
         self._speed, self._movement_type, self._ship_img = species[enemy_type][0:3]
         self._laser_type, self._health, self._point_value = species[enemy_type][3:6]
