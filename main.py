@@ -10,6 +10,7 @@
 # randomly generated enemies.
 
 from GarudaGame import *
+from system import *
 
 
 def main():
@@ -114,6 +115,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:  # allows quitting game by clicking close button
                 running = False
+                sys.off()
 
         keys = pygame.key.get_pressed()
         # defines player movement with arrow keys
@@ -132,4 +134,44 @@ def main():
         update_window()
 
 
-main()
+def title():
+    """Runs the title screen and allows game exit."""
+    display_title = True
+    game = GarudaGame()
+
+    while display_title:
+        game_title = game.font("title").render("Garuda", True, (255, 255, 100))
+        game_title2 = game.font("lost").render("Press SPACE To Start", True, (255, 255, 255))
+        game.get_window().blit(game.get_background(), (0, 0))
+        game.get_window().blit(game_title,
+                               (game.get_width() / 2 - game_title.get_width() / 2, game.get_height() // 3))
+        game.get_window().blit(game_title2,
+                               (game.get_width() / 2 - game_title2.get_width() / 2, game.get_height()*3 // 4))
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # allows quitting game by clicking close button
+                display_title = False
+                sys.off()
+
+        keys = pygame.key.get_pressed()
+        # defines cursor movement on title screen menu
+        if keys[pygame.K_LEFT]:
+            pass
+        if keys[pygame.K_RIGHT]:
+            pass
+        if keys[pygame.K_UP]:
+            pass
+        if keys[pygame.K_DOWN]:
+            pass
+        # allows player to make a selection/start the game
+        if keys[pygame.K_SPACE]:
+            display_title = False
+
+
+if __name__ == "__main__":
+    sys = System()
+    while sys.on():
+        title()
+        if sys.on():
+            main()

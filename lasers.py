@@ -35,6 +35,7 @@ class Laser:
         self._image = {
             # Laser Images = image file should be 16 x 32 pixels
             "green_blast": pygame.image.load("assets/green_blast.png"),
+            "blank": pygame.image.load("assets/Blank.png"),
             "explosion": pygame.image.load("assets/simple_explosion.png"),
             "green_laser": pygame.image.load("assets/laser_green.png"),
             "lightning": pygame.image.load("assets/lightning blue.png"),
@@ -63,7 +64,8 @@ class Laser:
             "rayGreen": (10, 10, 15, self._image["rayGreen"], self.normal),
             "rayRed": (10, 10, 15, self._image["rayRed"], self.normal),
             "blasterGreen": (10, 10, 15, self._image["blasterGreen"], self.normal),
-            "blasterRed": (10, 10, 15, self._image["blasterRed"], self.normal)
+            "blasterRed": (10, 10, 15, self._image["blasterRed"], self.normal),
+            "blank": (0, 1000, 1000, self._image["blank"], self.normal)
 
         }
         self._x = x
@@ -80,6 +82,10 @@ class Laser:
     def get_y(self):
         """returns laser's y coordinate"""
         return self._y
+
+    def get_width(self):
+        """returns width of laser's image"""
+        return self._laser_img.get_width()
 
     def get_damage(self):
         """returns laser's damage value"""

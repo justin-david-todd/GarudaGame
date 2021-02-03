@@ -35,7 +35,8 @@ class GarudaGame:
         # Dictionary of used fonts
         self._font = {
             "main": pygame.font.SysFont('comicsansms', 50),
-            "lost": pygame.font.SysFont('comicsansms', 80)
+            "lost": pygame.font.SysFont('comicsansms', 80),
+            "title": pygame.font.SysFont('comicsansms', 150)
         }
 
         # background, icon, and caption contents
@@ -136,7 +137,8 @@ class GarudaGame:
 
     def next_level(self):
         self._level_sequence[self._current_level]()
-        self._current_level += 1
+        if self._current_level < len(self._level_sequence)-1:
+            self._current_level += 1
 
     def spawn_player(self):
         """Creates a new Player object in the lower center of the screen."""
@@ -196,14 +198,14 @@ class GarudaGame:
     def level_one(self):
         """spawns enemies for level 1"""
         # WAVE 1
-        self.spawn_row(-100, "squid")
-        self.spawn_row(-164, "squid")
-        self.spawn_row(200, "squid")
-        self.spawn_row(264, "squid")
+        self.spawn_row(-100, "Squid", "Block")
+        self.spawn_row(-164, "Squid")
+        self.spawn_row(200, "Squid")
+        self.spawn_row(264, "Squid")
 
     def level_two(self):
         """spawns enemies for level 1"""
-        self.spawn_block(200, "squid")
+        self.spawn_block(200, "Metal1")
 
     def load_levels(self):
         """Loads the order that the player will play through each level"""
