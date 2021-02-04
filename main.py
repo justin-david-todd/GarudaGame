@@ -1,5 +1,5 @@
 # Author: Justin David Todd
-# Date: 12/21/2020
+# Date: 02/04/2021
 # Description: This is a mock version of the game Phoenix I loved playing as a kid
 # where a ship at the bottom of the screen shoots enemies and scores points based on the number
 # of ships defeated, using points to buy upgrades.
@@ -8,10 +8,10 @@
 # more modular so their attributes can be more easily adapted, adjusted, and generated.
 # The current design also aims to use pre-constructed levels instead of simply
 # randomly generated enemies.
-
-from GarudaGame import *
+import pygame
+from Config import Config
+from GarudaGame import GarudaGame
 import random
-from Config import *
 
 
 def main():
@@ -174,7 +174,7 @@ def main():
             game_title2 = sys.font("sub menu").render("New Game", True, (255, 255, 255))
             game_title3 = sys.font("sub menu").render("Quit", True, (255, 255, 255))
             cursor = sys.get_image("main_ship")
-            cursor_position = sys.get_height()*3//4 - sys.get_height()//10 + select_option*sys.get_height()//10
+            cursor_position = sys.get_height()*3//4 - sys.get_height()//10 + select_option*sys.get_height()//8
 
             # Draws Title Screen and Menu
             sys.get_window().blit(sys.get_background(), (0, 0))

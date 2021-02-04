@@ -1,9 +1,9 @@
 # Author: Justin David Todd
-# Last Modified: 01/31/2021
+# Last Modified: 02/04/2021
 # Description: This class holds the internal settings for the GarudaGame
 #   such as window size, FPS, background, etc.
-
-from ships import *
+import pygame
+from ships import Player, Enemy
 
 
 class GarudaGame:
@@ -13,7 +13,7 @@ class GarudaGame:
       game backgrounds, level sequence, and level configurations.
     """
 
-    def __init__(self,):
+    def __init__(self):
         """Initializes default window configurations."""
 
         # Stores window size
