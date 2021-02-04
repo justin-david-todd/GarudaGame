@@ -1,5 +1,5 @@
 # Author: Justin David Todd
-# Date: 12/21/2020
+# Date: 02/04/2021
 # Description: This is a mock version of the game Phoenix I loved playing as a kid
 # where a ship at the bottom of the screen shoots enemies and scores points based on the number
 # of ships defeated, using points to buy upgrades.
@@ -8,170 +8,219 @@
 # more modular so their attributes can be more easily adapted, adjusted, and generated.
 # The current design also aims to use pre-constructed levels instead of simply
 # randomly generated enemies.
-
-from GarudaGame import *
-from system import *
+import pygame
+from Config import Config
+from GarudaGame import GarudaGame
+import random
 
 
 def main():
-    """defines user interface features for the game and contains the game loop"""
-    game = GarudaGame()
-    player = game.spawn_player()
-    game.load_levels()
+    """
+    Loads System configurations.
+    Creates the game window opened to title screen
+    Current Title Menu options:
+        New Game
+        Quit
+    """
+    def new_game():
+        """Runs a new game of player ship shooting enemy ships"""
+        game = GarudaGame()
+        # Configures Game settings to match sys/Config settings.
+        game.resize_window(sys.get_width(), sys.get_height())
+        # Spawns a new player and loads the sequence of game levels
+        player = game.spawn_player()
+        game.load_levels()
 
-    running = True
-    lost = False
-    lost_count = 0
-    clock = pygame.time.Clock()
+        # Defines the new game as running, and not lost.
+        running = True
+        lost = False
 
-    def update_window():
-        """
-        Draws the images to be displayed in each frame, then updates the display.
-        Drawings occur in the following order:
-        draws the background
-        updates the display
-        """
-        game.get_window().blit(game.get_background(), (0, 0))
+        # Creates a count for Game Over message duration and creates a clock to track FPS.
+        lost_count = 0
+        clock = pygame.time.Clock()
 
-        if lost:
-            lost_label = game.font("lost").render("GAME OVER", True, (255, 255, 255))
-            game.get_window().blit(lost_label,
-                                   (game.get_width()/2 - lost_label.get_width()/2, game.get_height()/2 - 50))
+        def update_window():
+            """
+            Draws the images to be displayed in each frame, then updates the display.
+            Displays GAME OVER at loss
+            Controls Player/Enemy/Laser coundaries and actions each frame.
+            """
+            # Draws Background
+            sys.get_window().blit(game.get_background(), (0, 0))
 
-        # prevents player from moving off-screen
-        if player.get_x() < 0:
-            player.set_x(0)
-        if player.get_x() > game.get_width() - player.get_width():
-            player.set_x(game.get_width() - player.get_width())
-        if player.get_y() < 0:
-            player.set_y(0)
-        if player.get_y() > game.get_height() - 20 - player.get_height():
-            player.set_y(game.get_height() - 20 - player.get_height())
+            # Displays GAME OVER when player loses
+            if lost:
+                lost_label = sys.font("lost").render("GAME OVER", True, (255, 255, 255))
+                sys.get_window().blit(lost_label,
+                                      (game.get_width()/2 - lost_label.get_width()/2, game.get_height()/2 - 50))
 
-        # draws player and decrements player's laser cool down timer
-        if not lost:
-            player.draw(game.get_window())
-            player.cool_down()
+            """Controls Player actions each frame"""
+            # Prevents player from moving off-screen
+            if player.get_x() < 0:
+                player.set_x(0)
+            if player.get_x() > game.get_width() - player.get_width():
+                player.set_x(game.get_width() - player.get_width())
+            if player.get_y() < 0:
+                player.set_y(0)
+            if player.get_y() > game.get_height() - 20 - player.get_height():
+                player.set_y(game.get_height() - 20 - player.get_height())
 
-        for enemy in game.get_enemies()[:]:
-            enemy.move()
-            # controls how often enemies randomly fire
-            if random.randrange(0, 3*game.get_fps()) == 1:
-                enemy.shoot()
-            enemy.cool_down()
-            # enemies disappear when health reaches zero
-            if enemy.get_health() <= 0:
-                game.get_enemies().remove(enemy)
-            # explodes enemies that reach end of screen or collide with the player
-            if enemy.get_y() > game.get_height() - enemy.get_height() or enemy.collision(player):
-                enemy.explode()
-                game.get_enemies().remove(enemy)
-            # draws enemy
-            enemy.draw(game.get_window())
+            # Draws player and decrements player's laser cool down timer each frame
+            if not lost:
+                player.draw(sys.get_window())
+                player.cool_down()
 
-        # moves player lasers and removes off-screen lasers
-        for laser in game.get_player_lasers()[:]:
-            laser.mov()
-            # damages enemies hit by player lasers
+            """ Controls Enemy actions each frame"""
             for enemy in game.get_enemies()[:]:
-                if laser.collision(enemy):
-                    enemy.deplete_health(laser.get_damage())
+                enemy.move()
+                # controls how often enemies randomly fire
+                if random.randrange(0, 3*game.get_fps()) == 1:
+                    enemy.shoot()
+                enemy.cool_down()
+                # enemies disappear when health reaches zero
+                if enemy.get_health() <= 0:
+                    game.get_enemies().remove(enemy)
+                # explodes enemies that reach end of screen or collide with the player
+                if enemy.get_y() > game.get_height() - enemy.get_height() or enemy.collision(player):
+                    enemy.explode()
+                    game.get_enemies().remove(enemy)
+                # draws enemy
+                enemy.draw(sys.get_window())
+
+            """ Controls Laser Movements each frame."""
+            # Moves Player Lasers and removes off-screen lasers
+            for laser in game.get_player_lasers()[:]:
+                laser.mov()
+                # damages enemies hit by player lasers
+                for enemy in game.get_enemies()[:]:
+                    if laser.collision(enemy):
+                        enemy.deplete_health(laser.get_damage())
+                        if laser in game.get_player_lasers():
+                            game.get_player_lasers().remove(laser)
+                if laser.off_screen(game.get_height()):
                     if laser in game.get_player_lasers():
                         game.get_player_lasers().remove(laser)
-            if laser.off_screen(game.get_height()):
-                if laser in game.get_player_lasers():
-                    game.get_player_lasers().remove(laser)
-            laser.draw(game.get_window())
-        # moves enemy lasers and removes off-screen lasers
-        for laser in game.get_enemy_lasers()[:]:
-            laser.mov()
-            # damages player when hit by enemy lasers
-            if laser.collision(player):
-                player.deplete_health(laser.get_damage())
-                if laser in game.get_enemy_lasers():
-                    game.get_enemy_lasers().remove(laser)
-            if laser.off_screen(game.get_height()):
-                if laser in game.get_enemy_lasers():
-                    game.get_enemy_lasers().remove(laser)
-            laser.draw(game.get_window())
-        pygame.display.update()
+                laser.draw(sys.get_window())
+            # Moves Enemy Lasers and removes off-screen lasers
+            for laser in game.get_enemy_lasers()[:]:
+                laser.mov()
+                # damages player when hit by enemy lasers
+                if laser.collision(player):
+                    player.deplete_health(laser.get_damage())
+                    if laser in game.get_enemy_lasers():
+                        game.get_enemy_lasers().remove(laser)
+                if laser.off_screen(game.get_height()):
+                    if laser in game.get_enemy_lasers():
+                        game.get_enemy_lasers().remove(laser)
+                laser.draw(sys.get_window())
+            pygame.display.update()
 
-    while running:
-        clock.tick(game.get_fps())
+        """Defines Lose conditions, FPS restrictions, Player Controls"""
+        # Restricts game speed to config FPS
+        while running:
+            clock.tick(game.get_fps())
 
-        # begins next level if enemies depleted.
-        if len(game.get_enemies()) == 0:
-            game.next_level()
+            # Loads next level when are enemies depleted.
+            if len(game.get_enemies()) == 0:
+                game.next_level()
 
-        # player lose conditions
-        if player.get_health() <= 0:
-            if lost_count == 0:
-                player.explode()
-            lost = True
-            lost_count += 1
-        if lost_count > game.get_fps() * 5:           # displays "lose" message for five seconds, then ends game
-            running = False
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # allows quitting game by clicking close button
+            # Defines player lose conditions
+            if player.get_health() <= 0:
+                if lost_count == 0:
+                    player.explode()
+                lost = True
+                lost_count += 1
+            # Displays Game Over for five seconds, then ends game
+            if lost_count > game.get_fps() * 5:
                 running = False
-                sys.off()
 
-        keys = pygame.key.get_pressed()
-        # defines player movement with arrow keys
-        if keys[pygame.K_LEFT]:
-            player.horizontal_move(-player.get_speed())
-        if keys[pygame.K_RIGHT]:
-            player.horizontal_move(player.get_speed())
-        if keys[pygame.K_UP]:
-            player.vertical_move(-player.get_speed())
-        if keys[pygame.K_DOWN]:
-            player.vertical_move(player.get_speed())
-        # defines key for shooting player lasers
-        if keys[pygame.K_SPACE]:
-            player.shoot()
+            # Quits game by clicking close button
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    sys.off()
 
-        update_window()
+            """Defines Player Controls"""
+            # Logs keys pressed each frame
+            keys = pygame.key.get_pressed()
+            # Moves Player by with arrow keys
+            if keys[pygame.K_LEFT]:
+                player.horizontal_move(-player.get_speed())
+            if keys[pygame.K_RIGHT]:
+                player.horizontal_move(player.get_speed())
+            if keys[pygame.K_UP]:
+                player.vertical_move(-player.get_speed())
+            if keys[pygame.K_DOWN]:
+                player.vertical_move(player.get_speed())
 
+            # Defines keys for Shooting player lasers
+            if keys[pygame.K_SPACE]:
+                player.shoot()
 
-def title():
-    """Runs the title screen and allows game exit."""
-    display_title = True
-    game = GarudaGame()
+            update_window()
 
-    while display_title:
-        game_title = game.font("title").render("Garuda", True, (255, 255, 100))
-        game_title2 = game.font("lost").render("Press SPACE To Start", True, (255, 255, 255))
-        game.get_window().blit(game.get_background(), (0, 0))
-        game.get_window().blit(game_title,
-                               (game.get_width() / 2 - game_title.get_width() / 2, game.get_height() // 3))
-        game.get_window().blit(game_title2,
-                               (game.get_width() / 2 - game_title2.get_width() / 2, game.get_height()*3 // 4))
-        pygame.display.update()
+    def title_screen():
+        """Runs the title screen menu."""
+        display_title = True
+        # Defines Menu Screen options
+        menu_options = ["new game", "quit"]
+        select_option = 0
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # allows quitting game by clicking close button
-                display_title = False
-                sys.off()
+        sys.display_decor()
 
-        keys = pygame.key.get_pressed()
-        # defines cursor movement on title screen menu
-        if keys[pygame.K_LEFT]:
-            pass
-        if keys[pygame.K_RIGHT]:
-            pass
-        if keys[pygame.K_UP]:
-            pass
-        if keys[pygame.K_DOWN]:
-            pass
-        # allows player to make a selection/start the game
-        if keys[pygame.K_SPACE]:
-            display_title = False
+        while display_title:
+            # Defines contents displayed on Title Screen
+            game_title = sys.font("title").render("Garuda", True, (255, 255, 100))
+            game_title2 = sys.font("sub menu").render("New Game", True, (255, 255, 255))
+            game_title3 = sys.font("sub menu").render("Quit", True, (255, 255, 255))
+            cursor = sys.get_image("main_ship")
+            cursor_position = sys.get_height()*3//4 - sys.get_height()//10 + select_option*sys.get_height()//8
+
+            # Draws Title Screen and Menu
+            sys.get_window().blit(sys.get_background(), (0, 0))
+            sys.get_window().blit(game_title, (sys.get_width() // 2 - game_title.get_width() // 2,
+                                               sys.get_height()//3))
+            sys.get_window().blit(game_title2, (sys.get_width() // 2 - game_title2.get_width() // 2,
+                                                sys.get_height()*3//4 - sys.get_height()//10))
+            sys.get_window().blit(game_title3, (sys.get_width() // 2 - game_title2.get_width() // 2,
+                                                sys.get_height() * 3 // 4))
+            sys.get_window().blit(cursor, (sys.get_width()//2 - game_title2.get_width()*11//14,
+                                           cursor_position))
+            pygame.display.update()
+
+            """Title Menu Controls"""
+            for event in pygame.event.get():
+                # Quits game by clicking close button
+                if event.type == pygame.QUIT:
+                    display_title = False
+                    sys.off()
+                # Navigates Menu with UP/LEFT and DOWN/RIGHT keys
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_UP or event.key == pygame.K_LEFT:
+                        select_option -= 1
+                        if select_option < 0:
+                            select_option = len(menu_options) - 1
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_RIGHT:
+                        select_option += 1
+                        if select_option >= len(menu_options):
+                            select_option = 0
+                    # Select menu option with SPACE/RETURN/ENTER
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE or event.key == pygame.K_KP_ENTER:
+                        display_title = False
+                        sys.set_destination(menu_options[select_option])
+                        if sys.get_destination() == "quit":
+                            sys.off()
+    """
+    Creates the game's Config in an "on" state.
+    Defaults to title_screen on start or when a new_game ends.
+    System turns off and program exits if window is closed or "QUIT" is selected from title_screen. 
+    """
+    sys = Config()
+    while sys.on():
+        title_screen()
+        if sys.on() and sys.get_destination() == "new game":
+            new_game()
 
 
 if __name__ == "__main__":
-    sys = System()
-    while sys.on():
-        title()
-        if sys.on():
-            main()
+    main()

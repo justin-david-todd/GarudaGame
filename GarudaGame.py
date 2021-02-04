@@ -1,66 +1,50 @@
 # Author: Justin David Todd
-# Last Modified: 01/31/2021
+# Last Modified: 02/04/2021
 # Description: This class holds the internal settings for the GarudaGame
 #   such as window size, FPS, background, etc.
-
-from ships import *
+import pygame
+from ships import Player, Enemy
 
 
 class GarudaGame:
-    """Holds GarudaGame configurations such as window size, FPS, and images."""
+    """
+    Creates a playable ship-shooting game.
+    Defines creation of player, laser, and enemy objects,
+      game backgrounds, level sequence, and level configurations.
+    """
 
     def __init__(self):
         """Initializes default window configurations."""
-        # General Display Attributes
+
+        # Stores window size
         self._window_width = 800
         self._window_height = 800
-        self._fps = 60
-        self._window = pygame.display.set_mode((self._window_width, self._window_height))
-        self._current_level = 0
 
-        # Dictionary on Image assets
-        self._image = {
+        # Dictionary of Game Backgrounds
+        self._backgrounds = {
             "bg_default": pygame.transform.scale(pygame.image.load("assets/starlight_bg.png"),
                                                  (self._window_width, self._window_height)),
-
-            # Sprites
-            # Player Images - image file should be 64x64 pixels
-            "main_ship": pygame.image.load("assets/main_ship.png"),
-
-            # Enemy Images - image file should be 32x32 pixels
-            "blue_baddy": pygame.image.load("assets/baddy_1.png"),
-            "red_baddy": pygame.image.load("assets/baddy_2.png")
         }
 
-        # Dictionary of used fonts
-        self._font = {
-            "main": pygame.font.SysFont('comicsansms', 50),
-            "lost": pygame.font.SysFont('comicsansms', 80),
-            "title": pygame.font.SysFont('comicsansms', 150)
-        }
+        # General Display Attributes
+        self._background = self._backgrounds["bg_default"]
+        self._fps = 60
+        self._current_level = 0
 
-        # background, icon, and caption contents
-        self._background = self._image["bg_default"]
-        self._icon = self._image["blue_baddy"]
-        self._caption = "Garuda"
-
-        # Lists holding Player Lasers, Enemy Lasers, and Enemies (for iterating through groups)
+        # Stores Enemies, Enemy Lasers, Player Lasers and Levels
         self._enemies = []
         self._enemy_lasers = []
         self._player_lasers = []
         self._level_sequence = []
 
-    def get_image_from_name(self, image_name):
-        """
-        Takes an image name and retrieves the image of that name.
-        """
-        return self._image[image_name]
+    # Get Methods
+    def get_background(self):
+        """Returns the current game background"""
+        return self._background
 
-    def font(self, font_name):
-        """
-        Takes a font name and retrieves the image of that name.
-        """
-        return self._font[font_name]
+    def get_fps(self):
+        """Returns the game's fps"""
+        return self._fps
 
     def get_width(self):
         """Returns the width of the game window."""
@@ -70,29 +54,9 @@ class GarudaGame:
         """Returns the height of the game window"""
         return self._window_height
 
-    def get_fps(self):
-        """Returns the game's fps"""
-        return self._fps
-
-    def get_icon(self):
-        """Returns the game's icon"""
-        return self._icon
-
     def get_current_level(self):
         """Returns the current level"""
         return self.get_current_level()
-
-    def get_caption(self):
-        """Returns the game's caption"""
-        return self._caption
-
-    def get_window(self):
-        """Returns the game's window."""
-        return self._window
-
-    def get_background(self):
-        """Returns the game's background"""
-        return self._background
 
     def get_enemies(self):
         """Returns the list of all active enemies"""
@@ -110,44 +74,31 @@ class GarudaGame:
         """Retrieves the level sequence"""
         return self._level_sequence
 
-    def set_icon(self, image_name):
-        """Takes an image name and sets the icon to that image."""
-        self._icon = self._image[image_name]
-        pygame.display.set_icon(self.get_icon())
-
-    def set_caption(self, string):
-        """Takes a string and sets the caption to that string"""
-        self._caption = string
-        pygame.display.set_caption(self.get_caption())
+    # Set Methods
+    def set_background(self, image_name):
+        """Takes an image and sets the background to that image."""
+        self._background = self._backgrounds[image_name]
 
     def resize_window(self, width, height):
         """Takes two integers, width and height, and resizes the window to those dimensions."""
         self._window_width = width
         self._window_height = height
 
-    def set_background(self, image_name):
-        """Takes an image and sets the background to that image."""
-        self._background = pygame.transform.scale(self._image[image_name],
-                                                  (self._window_width, self._window_height)),
-
-    def display_decor(self):
-        """Displays game icon at start in corner of game window."""
-        pygame.display.set_icon(self.get_icon())
-        pygame.display.set_caption(self.get_caption())
-
+    # Other Methods
     def next_level(self):
+        """Loads the next level in level_sequence and increments the current level."""
         self._level_sequence[self._current_level]()
         if self._current_level < len(self._level_sequence)-1:
             self._current_level += 1
 
     def spawn_player(self):
         """Creates a new Player object in the lower center of the screen."""
-        # creates player ship at the center bottom of the screen.
-        # passing player_lasers array to store lasers fired.
+        # Creates player ship at the center bottom of the screen
+        #   and passes player_lasers as array to store lasers fired.
         player = Player(0, 0, self._player_lasers, 100)
         player.set_x(self._window_width / 2 - player.get_width() / 2)
         player.set_y(self._window_height - 100)
-        # informs player of game window dimensions
+        # Informs Player object of game window dimensions
         player.set_window(self._window_width, self._window_height)
         return player
 
@@ -162,7 +113,7 @@ class GarudaGame:
         enemy.set_window(self._window_width, self._window_height)
         self._enemies.append(enemy)
 
-    # spawn patterns
+    # Collection of Spawn Patterns
     def spawn_row(self, distance, species, species2=None):
         """
         Takes a distance in pixels and a species.
@@ -193,13 +144,13 @@ class GarudaGame:
             self.spawn_row(distance, species, species2)
             distance += 64
 
-    # Game Level Designs
-
+    # Collection of Game Levels
     def level_one(self):
         """spawns enemies for level 1"""
         # WAVE 1
         self.spawn_row(-100, "Squid", "Block")
         self.spawn_row(-164, "Squid")
+        # WAVE 2
         self.spawn_row(200, "Squid")
         self.spawn_row(264, "Squid")
 
