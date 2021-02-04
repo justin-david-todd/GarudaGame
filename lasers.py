@@ -4,7 +4,6 @@
 #   including a dictionary of all the laser varieties and explosions.
 
 import pygame
-import random
 pygame.font.init()
 
 
@@ -31,7 +30,7 @@ class Laser:
         creates a laser object that propels at a set speed until colliding with the end of the screen
         or an opposing ship.
         """
-        # dictionary of predefined laser types and their attributes
+        # Dictionary of Laser Images
         self._image = {
             # Laser Images = image file should be 16 x 32 pixels
             "green_blast": pygame.image.load("assets/green_blast.png"),
@@ -49,6 +48,8 @@ class Laser:
             "blasterGreen": pygame.image.load("assets/blasterGreen.png"),
             "blasterRed": pygame.image.load("assets/blasterRed.png")
         }
+
+        # Dictionary of Laser Types
         self._laser_type = {
             # "laser_type" : (damage, velocity, cool_down, laser_img, move_pattern)
             "green": (10, 10, 15, self._image["green_laser"], self.normal),
@@ -70,11 +71,21 @@ class Laser:
         }
         self._x = x
         self._y = y
-        self._damage, self._velocity, self._cool_down, self._laser_img, \
-            self.move_pattern = self._laser_type[laser_type]
-        self._mask = pygame.mask.from_surface(self._laser_img)
+
+        # Counter for timing movement pattern maneuvers
         self._move_timer = 0
 
+        # Define Laser Attributes based on type
+        self._damage = self._laser_type[laser_type][0]         # Damage
+        self._velocity = self._laser_type[laser_type][1]       # Velocity
+        self._cool_down = self._laser_type[laser_type][2]      # Cool Down Time
+        self._laser_img = self._laser_type[laser_type][3]      # Image
+        self.move_pattern = self._laser_type[laser_type][4]     # Movement Pattern
+
+        # Define Mask for collisions
+        self._mask = pygame.mask.from_surface(self._laser_img)
+
+    # Get Methods
     def get_x(self):
         """returns laser's x coordinate"""
         return self._x
@@ -107,14 +118,7 @@ class Laser:
         """returns the laser's move_timer"""
         return self._move_timer
 
-    def horizontal_move(self, num):
-        """takes a positive or negative value and adds it to the x coordinate"""
-        self._x += num
-
-    def vertical_move(self, num):
-        """takes a positive or negative value and adds it to the y coordinate"""
-        self._y += num
-
+    # Other Methods
     def draw(self, surface):
         """
         takes a surface
@@ -140,8 +144,15 @@ class Laser:
         """
         return collide(obj, self)
 
-    # LASER MOVE PATTERNS
+    def horizontal_move(self, num):
+        """takes a positive or negative value and adds it to the x coordinate"""
+        self._x += num
 
+    def vertical_move(self, num):
+        """takes a positive or negative value and adds it to the y coordinate"""
+        self._y += num
+
+    # Collection of Laser Movement Patterns
     def normal(self):
         """shoots laser in straight line"""
         self._y += self._velocity

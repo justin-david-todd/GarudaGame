@@ -67,6 +67,7 @@ class Ship:
         self._width = 800
         self._height = 800
 
+    # Get Methods
     def get_x(self):
         """returns value of ship's x coordinate"""
         return self._x
@@ -107,6 +108,7 @@ class Ship:
         """returns width of ship image"""
         return self._ship_img.get_height()
 
+    # Set Methods
     def set_x(self, num):
         """takes a number and sets the x coordinate to that value"""
         self._x = num
@@ -125,6 +127,14 @@ class Ship:
         self._width = width
         self._height = height
 
+    def set_laser_type(self, laser_type):
+        """
+        takes a laser type
+        change's ship's laser type to the specified type (string)
+        """
+        self._laser_type = laser_type
+
+    # Other Methods
     def recover_health(self, num):
         """
         takes a number and adds it to health value
@@ -139,13 +149,6 @@ class Ship:
         self._health -= num
         if self._health < 0:
             self._health = 0
-
-    def set_laser_type(self, laser_type):
-        """
-        takes a laser type
-        change's ship's laser type to the specified type (string)
-        """
-        self._laser_type = laser_type
 
     def horizontal_move(self, num):
         """takes a positive or negative value and adds it to the x coordinate"""
@@ -183,7 +186,7 @@ class Ship:
         """
         return collide(obj, self)
 
-    # SHIP MOVE PATTERNS
+    # Collection of Ship Movement Patterns
     # TODO diversify movement patterns.
     def move_down(self):
         """movement pattern: sends the enemy down in a straight line"""
@@ -200,6 +203,10 @@ class Player(Ship):
         self._ship_img = self._image["main_ship"]
         self._laser_type = "player_green"
         self._mask = pygame.mask.from_surface(self._ship_img)
+
+    def set_image(self, ship_image):
+        """Takes an image name and sets player ship to that image"""
+        self._ship_img = self._image[ship_image]
 
     def shoot(self):
         """if the cool_down_counter is zero, fires a laser object from the front of the ship."""
@@ -233,9 +240,10 @@ class Enemy(Ship):
 
     def __init__(self, x, y, laser_array, enemy_type):
         super().__init__(x, y, laser_array)
-        # enemy_type : (speed, movement_pattern, ship_img, laser_type, health, point_value)
-        species = {
-            # TODO diversify enemy types
+
+        # Dictionary of Enemy Species
+        self._species = {
+            # "Species": (Speed, Movement Pattern, Image, Laser Type, Health, Point Value)
             "Squid": (1, self.move_down, self._image["BlueSquid"], "blueShot", 10, 10),
             "ArrowBlue": (1, self.move_down, self._image["ArrowBlue"], "blueShot", 10, 10),
             "ArrowGold": (1, self.move_down, self._image["ArrowGold"], "blueShot", 10, 10),
@@ -262,10 +270,17 @@ class Enemy(Ship):
             "Metal1": (1, self.move_down, self._image["metal_1"], "blueShot", 10, 10),
             "MetalSquid": (1, self.move_down, self._image["MetalSquid"], "blueShot", 10, 10),
             "RedMetalSquid": (1, self.move_down, self._image["RedMetalSquid"], "blueShot", 10, 10)
-
         }
-        self._speed, self._movement_type, self._ship_img = species[enemy_type][0:3]
-        self._laser_type, self._health, self._point_value = species[enemy_type][3:6]
+
+        # Defines Enemy Attributes based on type
+        self._speed = self._species[enemy_type][0]                    # Speed
+        self._movement_type = self._species[enemy_type][1]            # Movement Pattern
+        self._ship_img = self._species[enemy_type][2]                 # Image
+        self._laser_type = self._species[enemy_type][3]               # Laser Type
+        self._health = self._species[enemy_type][4]                   # Health
+        self._point_value = self._species[enemy_type][5]              # Point Value
+
+        # Creates mask for collisions
         self._mask = pygame.mask.from_surface(self._ship_img)
 
     def move(self):
