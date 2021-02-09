@@ -23,7 +23,7 @@ class Config:
 
             # Sprites
             # Player Images - image file should be 64x64 pixels
-            "main_ship": pygame.image.load("assets/CentiheadBlue.png"),
+            "main_ship": pygame.image.load("assets/main_ship.png"),
         }
         self._window = pygame.display.set_mode((self._window_width, self._window_height))
         self._background = self._image["bg_default"]
