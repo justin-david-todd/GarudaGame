@@ -4,6 +4,7 @@
 #   such as window size, FPS, background, etc.
 
 from ships import *
+import random
 
 
 class GarudaGame:
@@ -36,6 +37,9 @@ class GarudaGame:
         self._enemy_lasers = []
         self._player_lasers = []
         self._level_sequence = []
+
+        # Stores Current Score
+        self._score = 0
 
     # Get Methods
     def get_background(self):
@@ -74,6 +78,10 @@ class GarudaGame:
         """Retrieves the level sequence"""
         return self._level_sequence
 
+    def get_score(self):
+        """Returns the current score"""
+        return self._score
+
     # Set Methods
     def set_background(self, image_name):
         """Takes an image and sets the background to that image."""
@@ -85,6 +93,10 @@ class GarudaGame:
         self._window_height = height
 
     # Other Methods
+    def amend_score(self, num):
+        """Takes an integer value and adds it to the current score."""
+        self._score += num
+
     def next_level(self):
         """Loads the next level in level_sequence and increments the current level."""
         self._level_sequence[self._current_level]()
@@ -102,7 +114,7 @@ class GarudaGame:
         player.set_window(self._window_width, self._window_height)
         return player
 
-    def spawn_enemy(self, x, y, species):
+    def spawn_enemy(self, x, y, species, adjust_x=None):
         """
         Takes an x coordinate, y coordinate, and species.
         Spawns a new enemy of that species at that location.
@@ -114,10 +126,11 @@ class GarudaGame:
         self._enemies.append(enemy)
 
     # Collection of Spawn Patterns
-    def spawn_row(self, distance, species, species2=None):
+    def spawn_row(self, distance, species, species2=None, adjust=None):
         """
         Takes a distance in pixels and a species.
         Takes an optional second species to alternate enemies.
+        Takes an optional fourth argument to set x coordinate of left most spawn.
         Spawns a central row of 10 enemies of that species
          starting that distance above the screen.
         (Negative distance spawns enemies on screen)
@@ -127,11 +140,55 @@ class GarudaGame:
         left_indent = 64
         spacing = 64
         num_enemies = 10
+
+        # Optional adjust of x coordinate
+        if adjust is not None:
+            left_indent = adjust
+
         for spawn in range(0, num_enemies):
             if spawn % 2 == 0:
                 self.spawn_enemy(left_indent + spacing * spawn, -distance, species)
             else:
                 self.spawn_enemy(left_indent + spacing * spawn, -distance, species2)
+
+    def spawn_column(self, distance, col, species, species2=None):
+        """
+        Takes a distance in pixels, an x coordinate, and a species.
+        Takes an optional second species to alternate enemies.
+        Spawns a column positioned at the coordinate of 10 enemies of that species
+         starting that distance above the screen.
+        (Negative distance spawns enemies on screen)
+        """
+        if species2 is None:
+            species2 = species
+        left_indent = col
+        spacing = 64
+        num_enemies = 10
+        for spawn in range(0, num_enemies):
+            if spawn % 2 == 0:
+                self.spawn_enemy(left_indent, -distance - spacing * spawn, species)
+            else:
+                self.spawn_enemy(left_indent, -distance - spacing * spawn, species2)
+
+    def spawn_split(self, distance, species, species2=None):
+        """
+        Takes a distance in pixels and a species.
+        Takes an optional second species to alternate enemies.
+        Spawns a central row of 10 enemies of that species
+         starting that distance above the screen.
+        (Negative distance spawns enemies on screen)
+        """
+        if species2 is None:
+            species2 = species
+        left_indent = 64*2
+        spacing = 64
+        num_enemies = 8
+        for spawn in range(0, num_enemies):
+            if spawn !=3 and spawn != 4:
+                if spawn % 2 == 0:
+                    self.spawn_enemy(left_indent + spacing * spawn, -distance, species)
+                else:
+                    self.spawn_enemy(left_indent + spacing * spawn, -distance, species2)
 
     def spawn_block(self, distance, species, species2=None):
         """
@@ -144,19 +201,105 @@ class GarudaGame:
             self.spawn_row(distance, species, species2)
             distance += 64
 
+    def spawn_v(self, distance, species, species2=None):
+        """
+        Takes a distance in pixels and a species.
+        Takes an optional second species to alternate enemies.
+        Spawns 11 enemies of the specified type in a "V" shape
+         starting that distance above the screen.
+        (Negative distance spawns enemies on screen)
+        """
+        if species2 is None:
+            species2 = species
+        left_indent = 64
+        spacing = 64
+        num_enemies = 11
+        # Adjusts drop height to match entered distance.
+        distance += 64 * (num_enemies//2 + 1)
+        # Spawns front enemy and enemies on descending part of "V"
+        for spawn in range(0, num_enemies//2+1):
+            if spawn % 2 == 0:
+                self.spawn_enemy(left_indent + spacing * spawn, -distance + 64*spawn, species)
+            else:
+                self.spawn_enemy(left_indent + spacing * spawn, -distance + 64*spawn, species2)
+
+        # Preserves location of front of "V"
+        last_x = left_indent+spacing*(num_enemies//2)
+        last_y = -distance+64*(num_enemies//2)
+
+        # Spawns enemies on ascending part of "V"
+        for spawn in range(1, num_enemies//2+1):
+            if spawn % 2 == 1:
+                self.spawn_enemy(last_x + spacing * spawn, last_y - 64*spawn, species2)
+            else:
+                self.spawn_enemy(last_x + spacing * spawn, last_y - 64 * spawn, species)
+
+    def spawn_random_rain(self, distance, quantity, species):
+        """
+        Takes a distance value, quantity, and a species. spaces the specified
+        quantity of single enemies of that species about 800px apart (height),
+        assigning them a random x coordinate.
+        Starting distance of first enemy is specified distance.
+        """
+        random.seed()
+        ship_width = Enemy(0, 0, [], species).get_width()
+        spacing = 800
+        for spawn in range(quantity):
+            self.spawn_enemy(random.randint(0, self.get_width()-ship_width), -distance-spacing*spawn, species)
+
+    def spawn_centipede_left(self, distance, head, body1, body2, length=None):
+        """ Takes a spawn distance, a head, and two body part enemies.
+        Spawns a left-facing horizontal centipede with a head and two kinds of body parts.
+        Takes an optional fourth argument to specify the centipede's number of segments.
+        Default number of segments is 7.
+        """
+        left_indent = 64
+        spacing = 64
+        segments = 7
+
+        if length is not None:
+            segments = length
+
+        self.spawn_enemy(left_indent, -distance, head)
+        for spawn in range(1, segments+1):
+            if spawn % 2 == 0:
+                self.spawn_enemy(left_indent + spacing * spawn, -distance, body1)
+            else:
+                self.spawn_enemy(left_indent + spacing * spawn, -distance, body2)
+
+    def spawn_centipede_right(self, distance, head, body1, body2, length=None):
+        """ Takes a spawn distance, a head, and two body part enemies.
+        Spawns a right-facing horizontal centipede with a head and two kinds of body parts.
+        Takes an optional fourth argument to specify the centipede's number of segments.
+        Default number of segments is 7.
+        """
+        right_indent = 128
+        spacing = 64
+        segments = 7
+
+        if length is not None:
+            segments = length
+
+        self.spawn_enemy(self.get_width()-right_indent, -distance, head)
+        for spawn in range(1, segments+1):
+            if spawn % 2 == 0:
+                self.spawn_enemy(self.get_width()-right_indent - spacing * spawn, -distance, body1)
+            else:
+                self.spawn_enemy(self.get_width()-right_indent - spacing * spawn, -distance, body2)
+
     # Collection of Game Levels
     def level_one(self):
         """spawns enemies for level 1"""
         # WAVE 1
-        self.spawn_row(-100, "Squid", "Block")
-        self.spawn_row(-164, "Squid")
+        self.spawn_column(-100, 64, "Squid", "Block")
+        self.spawn_random_rain(-228, 5, "Squid")
         # WAVE 2
-        self.spawn_row(200, "Squid")
-        self.spawn_row(264, "Squid")
+        self.spawn_random_rain(200, 10, "Squid")
+        self.spawn_random_rain(264, 10, "Squid")
 
     def level_two(self):
         """spawns enemies for level 1"""
-        self.spawn_block(200, "Metal1")
+        self.spawn_block(900, "Metal1")
 
     def load_levels(self):
         """Loads the order that the player will play through each level"""

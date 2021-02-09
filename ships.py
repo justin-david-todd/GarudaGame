@@ -283,6 +283,10 @@ class Enemy(Ship):
         # Creates mask for collisions
         self._mask = pygame.mask.from_surface(self._ship_img)
 
+    def get_value(self):
+        """Returns the enemy's point value"""
+        return self._point_value
+
     def move(self):
         """moves enemy according to movement_type"""
         self._movement_type()

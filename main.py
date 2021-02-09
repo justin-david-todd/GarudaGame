@@ -48,12 +48,6 @@ def main():
             # Draws Background
             sys.get_window().blit(game.get_background(), (0, 0))
 
-            # Displays GAME OVER when player loses
-            if lost:
-                lost_label = sys.font("lost").render("GAME OVER", True, (255, 255, 255))
-                sys.get_window().blit(lost_label,
-                                      (game.get_width()/2 - lost_label.get_width()/2, game.get_height()/2 - 50))
-
             """Controls Player actions each frame"""
             # Prevents player from moving off-screen
             if player.get_x() < 0:
@@ -79,6 +73,7 @@ def main():
                 enemy.cool_down()
                 # enemies disappear when health reaches zero
                 if enemy.get_health() <= 0:
+                    game.amend_score(enemy.get_value())
                     game.get_enemies().remove(enemy)
                 # explodes enemies that reach end of screen or collide with the player
                 if enemy.get_y() > game.get_height() - enemy.get_height() or enemy.collision(player):
@@ -113,6 +108,17 @@ def main():
                     if laser in game.get_enemy_lasers():
                         game.get_enemy_lasers().remove(laser)
                 laser.draw(sys.get_window())
+
+            # Displays GAME OVER when player loses
+            if lost:
+                lost_label = sys.font("lost").render("GAME OVER", True, (255, 255, 255))
+                sys.get_window().blit(lost_label,
+                                      (game.get_width() / 2 - lost_label.get_width() / 2,game.get_height() / 2 - 50))
+
+            # Displays the current Score in top-left corner
+            current_score = sys.font("main").render("Score: " + str(game.get_score()).rjust(7, "0"), True, (255, 255, 255))
+            sys.get_window().blit(current_score, (10, 10))
+
             pygame.display.update()
 
         """Defines Lose conditions, FPS restrictions, Player Controls"""
