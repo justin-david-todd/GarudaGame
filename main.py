@@ -112,11 +112,12 @@ def main():
             # Displays GAME OVER when player loses
             if lost:
                 lost_label = sys.font("lost").render("GAME OVER", True, (255, 255, 255))
-                sys.get_window().blit(lost_label,
-                                      (game.get_width() / 2 - lost_label.get_width() / 2,game.get_height() / 2 - 50))
+                temp_width = game.get_width() / 2 - lost_label.get_width() / 2
+                sys.get_window().blit(lost_label, (temp_width, game.get_height() / 2 - 50))
 
             # Displays the current Score in top-left corner
-            current_score = sys.font("main").render("Score: " + str(game.get_score()).rjust(7, "0"), True, (255, 255, 255))
+            current_score = sys.font("main").render("Score: " + str(game.get_score()).rjust(7, "0"),
+                                                    True, (255, 255, 255))
             sys.get_window().blit(current_score, (10, 10))
 
             pygame.display.update()

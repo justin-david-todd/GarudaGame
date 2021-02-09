@@ -14,7 +14,7 @@ class GarudaGame:
       game backgrounds, level sequence, and level configurations.
     """
 
-    def __init__(self,):
+    def __init__(self):
         """Initializes default window configurations."""
 
         # Stores window size
@@ -114,7 +114,7 @@ class GarudaGame:
         player.set_window(self._window_width, self._window_height)
         return player
 
-    def spawn_enemy(self, x, y, species, adjust_x=None):
+    def spawn_enemy(self, x, y, species):
         """
         Takes an x coordinate, y coordinate, and species.
         Spawns a new enemy of that species at that location.
@@ -184,7 +184,7 @@ class GarudaGame:
         spacing = 64
         num_enemies = 8
         for spawn in range(0, num_enemies):
-            if spawn !=3 and spawn != 4:
+            if spawn != 3 and spawn != 4:
                 if spawn % 2 == 0:
                     self.spawn_enemy(left_indent + spacing * spawn, -distance, species)
                 else:
