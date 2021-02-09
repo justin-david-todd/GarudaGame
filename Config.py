@@ -1,8 +1,9 @@
 # Author: Justin David Todd
-# Last Modified: 02/02/2021
+# Last Modified: 02/04/2021
 # Description: This System class represents the running game console.
 #   Holds system's "ON" status and stores/retrieves game saves, high scores, etc.
 import pygame
+pygame.font.init()
 
 
 class Config:
@@ -22,7 +23,7 @@ class Config:
 
             # Sprites
             # Player Images - image file should be 64x64 pixels
-            "main_ship": pygame.image.load("assets/main_ship.png"),
+            "main_ship": pygame.image.load("assets/CentiheadBlue.png"),
         }
         self._window = pygame.display.set_mode((self._window_width, self._window_height))
         self._background = self._image["bg_default"]
@@ -32,7 +33,7 @@ class Config:
         self._font = {
             "main": pygame.font.SysFont('comicsansms', self.get_height()//16),
             "lost": pygame.font.SysFont('comicsansms', self.get_height()//10),
-            "sub menu": pygame.font.SysFont('comicsansms', self.get_height()//10),
+            "sub menu": pygame.font.SysFont('comicsansms', self.get_height()//12),
             "title": pygame.font.SysFont('comicsansms', self.get_height()//5)
         }
 

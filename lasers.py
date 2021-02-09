@@ -1,10 +1,9 @@
 # Author: Justin David Todd
-# Last Modified: 01/31/2021
+# Last Modified: 02/04/2021
 # Description: Defines collisions, designs the laser objects to be fired by the ships
 #   including a dictionary of all the laser varieties and explosions.
 
 import pygame
-pygame.font.init()
 
 
 def collide(obj1, obj2):

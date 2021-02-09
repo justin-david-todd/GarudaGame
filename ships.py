@@ -1,4 +1,8 @@
-from lasers import *
+# Author: Justin David Todd
+# Last Modified: 02/04/2021
+# Description: Imports assets for and defines Player and Enemy Ships.
+import pygame
+from lasers import collide, Laser
 
 
 class Ship:
