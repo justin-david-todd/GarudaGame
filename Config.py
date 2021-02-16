@@ -1,7 +1,9 @@
 # Author: Justin David Todd
 # Last Modified: 02/04/2021
-# Description: This System class represents the running game console.
-#   Holds system's "ON" status and stores/retrieves game saves, high scores, etc.
+# Description: This Config class represents the running game console.
+#   Holds system's "ON" status and stores/retrieves menu images, backgrounds,
+#   window attributes, icons, fps, etc.
+#   Music, Game saves and High scores would also be stored in this class.
 import pygame
 pygame.font.init()
 
@@ -23,7 +25,7 @@ class Config:
 
             # Sprites
             # Player Images - image file should be 64x64 pixels
-            "main_ship": pygame.image.load("assets/CentiheadBlue.png"),
+            "main_ship": pygame.image.load("assets/main_ship.png"),
         }
         self._window = pygame.display.set_mode((self._window_width, self._window_height))
         self._background = self._image["bg_default"]
