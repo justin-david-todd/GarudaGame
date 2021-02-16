@@ -3,6 +3,7 @@ This is a custom version of the game 'Phoenix' I loved playing as a kid. The pro
 My focus is to make the game's ships, lasers, and levels modular so their attributes can be easily upgraded or customized.
 
 Features I have included:
+
 ***System Features***
 - No Global Variables: All attributes used by objects are stored as private data members.
 - GarudaGame class: One class to instantiate a new game which contains all objects (ships, lasers, etc.) the user will interact with.
