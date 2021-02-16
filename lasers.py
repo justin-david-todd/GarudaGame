@@ -55,15 +55,16 @@ class Laser:
             "player_green": (10, -10, 15, self._image["green_blast"], self.normal),
             "explosion": (30, 10, 15, self._image["explosion"], self.delayed),
             "explosion_zero": (0, 10, 15, self._image["explosion"], self.delayed),
-            "lightning": (10, 10, 15, self._image["lightning"], self.normal),
+            "lightning": (30, 30, 5, self._image["lightning"], self.normal),
             "blueShot": (10, 10, 15, self._image["blueShot"], self.normal),
             "greenShot": (10, 10, 15, self._image["greenShot"], self.normal),
             "redShot": (10, 10, 15, self._image["redShot"], self.normal),
             "yellowShot": (10, 10, 15, self._image["yellowShot"], self.normal),
-            "rayBlue": (10, 10, 15, self._image["rayBlue"], self.normal),
+            "rayBlue": (30, 10, 15, self._image["rayBlue"], self.normal),
             "rayGreen": (10, 10, 15, self._image["rayGreen"], self.normal),
-            "rayRed": (10, 10, 15, self._image["rayRed"], self.normal),
-            "blasterGreen": (10, 10, 15, self._image["blasterGreen"], self.normal),
+            "rayRed": (20, 10, 15, self._image["rayRed"], self.normal),
+            "blasterGreen": (10, 10, 15, self._image["blasterGreen"], self.weave),
+            "blasterGreen2": (10, 10, 15, self._image["blasterGreen"], self.weave2),
             "blasterRed": (10, 10, 15, self._image["blasterRed"], self.normal),
             "blank": (0, 1000, 1000, self._image["blank"], self.normal)
 
@@ -71,8 +72,9 @@ class Laser:
         self._x = x
         self._y = y
 
-        # Counter for timing movement pattern maneuvers
+        # Counter and direction marker for timing movement pattern maneuvers
         self._move_timer = 0
+        self._direction = 0
 
         # Define Laser Attributes based on type
         self._damage = self._laser_type[laser_type][0]         # Damage
@@ -134,7 +136,7 @@ class Laser:
         takes the height of the screen in pixels
         returns True if the laser in off-screen, else returns False
         """
-        return not (height >= self._y >= 0)
+        return not (height >= self._y > 1)
 
     def collision(self, obj):
         """
@@ -154,6 +156,28 @@ class Laser:
     # Collection of Laser Movement Patterns
     def normal(self):
         """shoots laser in straight line"""
+        self._y += self._velocity
+
+    def weave(self):
+        """shoots laser in straight line"""
+        if self._move_timer < 30:
+            self._x += 3
+        else:
+            self._x -= 3
+        self._move_timer += 1
+        if self._move_timer > 60:
+            self._move_timer = 0
+        self._y += self._velocity
+
+    def weave2(self):
+        """shoots laser in straight line"""
+        if self._move_timer < 30:
+            self._x -= 3
+        else:
+            self._x += 3
+        self._move_timer += 1
+        if self._move_timer > 60:
+            self._move_timer = 0
         self._y += self._velocity
 
     def delayed(self):

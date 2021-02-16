@@ -1,13 +1,14 @@
 # Author: Justin David Todd
 # Date: 02/04/2021
-# Description: This is a mock version of the game Phoenix I loved playing as a kid
-# where a ship at the bottom of the screen shoots enemies and scores points based on the number
-# of ships defeated, using points to buy upgrades.
-# The current version looks more like Space Invaders with power ups
-# but the project is still ongoing with a focus on making the ships, player, and lasers
-# more modular so their attributes can be more easily adapted, adjusted, and generated.
-# The current design also aims to use pre-constructed levels instead of simply
-# randomly generated enemies.
+# Description: This is a space ship vs aliens shooting game.
+# This main function holds the game loop with internal functions for the title screen,
+# creating a new game, and updating the window display.
+# A ship at the bottom of the screen shoots enemies and scores points based on the number
+# of ships defeated.
+# The project is still ongoing with a focus on making the ships, player, and lasers
+# more modular so their attributes can be easily adapted, adjusted, and generated.
+# The current design uses no global variables with all attributes encapsulated in classes and
+# aims to use pre-constructed levels rather than merely randomly generating enemies.
 import pygame
 from Config import Config
 from GarudaGame import GarudaGame
@@ -34,9 +35,11 @@ def main():
         # Defines the new game as running, and not lost.
         running = True
         lost = False
+        level_starting = False
 
         # Creates a count for Game Over message duration and creates a clock to track FPS.
         lost_count = 0
+        level_count = 0
         clock = pygame.time.Clock()
 
         def update_window():
@@ -115,6 +118,21 @@ def main():
                 temp_width = game.get_width() / 2 - lost_label.get_width() / 2
                 sys.get_window().blit(lost_label, (temp_width, game.get_height() / 2 - 50))
 
+            # Displays Level Number at start of new level
+            if level_starting:
+                if game.get_current_level() < len(game.get_level_sequence()):
+                    level_label = sys.font("lost").render("Level " + str(game.get_current_level()), True, (255, 255, 255))
+                    temp_width = game.get_width() / 2 - level_label.get_width() / 2
+                    sys.get_window().blit(level_label, (temp_width, game.get_height() / 2 - 50))
+                elif game.get_current_level() == len(game.get_level_sequence()):
+                    level_label = sys.font("lost").render("Welcome to Heck.", True, (255, 255, 255))
+                    temp_width = game.get_width() / 2 - level_label.get_width() / 2
+                    sys.get_window().blit(level_label, (temp_width, game.get_height() / 2 - 50))
+                else:
+                    level_label = sys.font("lost").render("So, You Want More???", True, (255, 255, 255))
+                    temp_width = game.get_width() / 2 - level_label.get_width() / 2
+                    sys.get_window().blit(level_label, (temp_width, game.get_height() / 2 - 50))
+
             # Displays the current Score in top-left corner
             current_score = sys.font("main").render("Score: " + str(game.get_score()).rjust(7, "0"),
                                                     True, (255, 255, 255))
@@ -130,6 +148,8 @@ def main():
             # Loads next level when are enemies depleted.
             if len(game.get_enemies()) == 0:
                 game.next_level()
+                level_starting = True
+                level_count = 120
 
             # Defines player lose conditions
             if player.get_health() <= 0:
@@ -163,6 +183,12 @@ def main():
             # Defines keys for Shooting player lasers
             if keys[pygame.K_SPACE]:
                 player.shoot()
+
+            # Controls display of new level message.
+            if level_count > 0:
+                level_count -= 1
+                if level_count == 0:
+                    level_starting = False
 
             update_window()
 

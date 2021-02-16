@@ -2,6 +2,7 @@
 # Last Modified: 02/04/2021
 # Description: Imports assets for and defines Player and Enemy Ships.
 import pygame
+import random
 from lasers import collide, Laser
 
 
@@ -45,6 +46,9 @@ class Ship:
             "CentiheadGreen": pygame.image.load("assets/CentiheadGreen.png"),
             "CentiheadPanda": pygame.image.load("assets/CentiheadPanda.png"),
             "CentiheadRed": pygame.image.load("assets/CentiheadRed.png"),
+            "CentiheadYellow": pygame.image.load("assets/CentiheadYellow.png"),
+            "CentiPurple": pygame.image.load("assets/CentiPurple.png"),
+            "CentiRed": pygame.image.load("assets/CentiRed.png"),
             "FlappyBlue": pygame.image.load("assets/Flappy Blue.png"),
             "FlappyGreen": pygame.image.load("assets/FlappyGreen.png"),
             "FlappyRed": pygame.image.load("assets/FlappyRed.png"),
@@ -67,9 +71,13 @@ class Ship:
         self._speed = 5
         self._lasers = laser_array
 
+        # counter and direction indicator for timing automated movement patterns
+        self._move_counter = 0
+        self._direction = 0
+
         # dimensions of screen ships are flying on.
-        self._width = 800
-        self._height = 800
+        self._scr_width = 800
+        self._scr_height = 800
 
     # Get Methods
     def get_x(self):
@@ -128,8 +136,8 @@ class Ship:
 
     def set_window(self, width, height):
         """Two pixel values, width and height, and informs ship of window dimensions"""
-        self._width = width
-        self._height = height
+        self._scr_width = width
+        self._scr_height = height
 
     def set_laser_type(self, laser_type):
         """
@@ -191,10 +199,127 @@ class Ship:
         return collide(obj, self)
 
     # Collection of Ship Movement Patterns
-    # TODO diversify movement patterns.
     def move_down(self):
         """movement pattern: sends the enemy down in a straight line"""
         self._y += self._speed
+
+    def sneak_sprint(self):
+        """enemy moves in a straight line, then increases speed when partway down screen."""
+        # Increases speed when reaches a third down screen.
+        if self._y >= self._scr_height//3:
+            self._y += self._speed * 3
+        else:
+            self._y += self._speed
+
+    def zig(self):
+        """enemy descends while weaving left and right, directional opposite to zag"""
+        # Moves ship right
+        if self._move_counter <= 60:
+            self._x += self._speed * 2
+        # Moves ship left
+        else:
+            self._x -= self._speed * 2
+
+        # Moves ship down
+        self._y += self._speed
+
+        self._move_counter += 1
+
+        # Resets left-right movement cycle
+        if self._move_counter > 120:
+            self._move_counter = 0
+
+    def zag(self):
+        """enemy descends while weaving left and right, directional opposite to zig."""
+        # Moves ship right
+        if self._move_counter <= 60:
+            self._x -= self._speed * 2
+        # Moves ship left
+        else:
+            self._x += self._speed * 2
+
+        # Moves ship down
+        self._y += self._speed
+
+        self._move_counter += 1
+
+        # Resets left-right movement cycle
+        if self._move_counter > 120:
+            self._move_counter = 0
+
+    def crawl_left(self):
+        """Enemy descends the screen by descending at the end of each row. Starts left."""
+        if self._x < 0 and self._move_counter == 0:
+            self._x = 0
+            self._move_counter += 70
+            self._direction = 1
+        if self._x > self._scr_width - 64:
+            self._x = self._scr_width - 64
+            self._move_counter += 70
+            self._direction = 0
+
+        # Moves the ship down while move_counter is active
+        if self._move_counter > 0:
+            self._y += 2
+            self._move_counter -= 1
+        # Moves ship left or right based on direction indicator
+        elif self._direction == 0:
+            self._x -= self._speed
+        else:
+            self._x += self._speed
+
+    def crawl_right(self):
+        """Enemy descends the screen by descending at the end of each row. Starts left."""
+        if self._x < 0 and self._move_counter == 0:
+            self._x = 0
+            self._move_counter += 70
+            self._direction = 0
+        if self._x > self._scr_width - 64:
+            self._x = self._scr_width - 64
+            self._move_counter += 70
+            self._direction = 1
+
+        # Moves the ship down while move_counter is active
+        if self._move_counter > 0:
+            self._y += 2
+            self._move_counter -= 1
+        # Moves ship left or right based on direction indicator
+        elif self._direction == 1:
+            self._x -= self._speed
+        else:
+            self._x += self._speed
+
+    def crawl_drop(self):
+        """Enemy descends the screen by descending at the end of each row. Starts left."""
+        # Randomly drops the ship after reaching halfway down the screen.
+        if self._move_counter == 0 and self._y > self._scr_height//2:
+            self._move_counter = random.randint(-250, -1)
+        if self._move_counter < 0:
+            if self._move_counter == -1:
+                self._y += self._speed*3
+                return
+            else:
+                self._move_counter += 1
+
+        # Moves the ship through a row from left to right.
+        if self._x < 0 and self._move_counter == 0:
+            self._x = 0
+            self._move_counter += 70
+            self._direction = 0
+        if self._x > self._scr_width - 64:
+            self._x = self._scr_width - 64
+            self._move_counter += 70
+            self._direction = 1
+
+        # Moves the ship down while move_counter is active (after hitting a wall)
+        if self._move_counter > 0:
+            self._y += 2
+            self._move_counter -= 1
+        # Moves ship left or right based on direction indicator
+        elif self._direction == 1:
+            self._x -= self._speed
+        else:
+            self._x += self._speed
 
 
 class Player(Ship):
@@ -253,25 +378,29 @@ class Enemy(Ship):
             "ArrowGold": (1, self.move_down, self._image["ArrowGold"], "blueShot", 10, 10),
             "ArrowPink": (1, self.move_down, self._image["ArrowPink"], "blueShot", 10, 10),
             "ArrowRed": (1, self.move_down, self._image["ArrowRed"], "blueShot", 10, 10),
-            "ArrowStealth": (1, self.move_down, self._image["ArrowStealth"], "blueShot", 10, 10),
-            "Block": (1, self.move_down, self._image["Block"], "blueShot", 20, 10),
+            "ArrowStealth": (2, self.move_down, self._image["ArrowStealth"], "lightning", 30, 100),
+            "Block": (1, self.sneak_sprint, self._image["Block"], "blank", 20, 10),
             "BlueSquid": (1, self.move_down, self._image["BlueSquid"], "blueShot", 10, 10),
             "BlueSpark": (1, self.move_down, self._image["blueSpark"], "blueShot", 10, 10),
-            "CentiBlue": (1, self.move_down, self._image["CentiBlue"], "blueShot", 10, 10),
-            "CentiGreen": (1, self.move_down, self._image["CentiGreen"], "blueShot", 10, 10),
-            "CentiheadBlue": (1, self.move_down, self._image["CentiheadBlue"], "blueShot", 10, 10),
-            "CentiheadDud": (1, self.move_down, self._image["CentiheadDud"], "blueShot", 10, 10),
-            "CentiheadGreen": (1, self.move_down, self._image["CentiheadGreen"], "blueShot", 10, 10),
-            "CentiheadPanda": (1, self.move_down, self._image["CentiheadPanda"], "blueShot", 10, 10),
-            "CentiheadRed": (1, self.move_down, self._image["CentiheadRed"], "blueShot", 10, 10),
+            "CentiBlue": (3, self.crawl_left, self._image["CentiBlue"], "blasterGreen", 60, 10),
+            "CentiGreen": (3, self.crawl_left, self._image["CentiGreen"], "blank", 60, 10),
+            "CentiheadBlue": (3, self.move_down, self._image["CentiheadBlue"], "blank", 60, 10),
+            "CentiheadDud": (3, self.crawl_drop, self._image["CentiheadDud"], "blank", 60, 40),
+            "CentiheadGreen": (3, self.move_down, self._image["CentiheadGreen"], "blank", 60, 10),
+            "CentiheadPanda": (3, self.crawl_left, self._image["CentiheadPanda"], "blank", 60, 10),
+            "CentiheadRed": (3, self.crawl_right, self._image["CentiheadRed"], "blasterRed", 10, 60),
+            "CentiheadYellow": (3, self.move_down, self._image["CentiheadYellow"], "blank", 10, 60),
+            "CentiPurple": (3, self.crawl_right, self._image["CentiPurple"], "blank", 10, 60),
+            "CentiRed": (3, self.crawl_right, self._image["CentiRed"], "blank", 10, 60),
             "FlappyBlue": (1, self.move_down, self._image["FlappyBlue"], "blueShot", 10, 10),
             "FlappyGreen": (1, self.move_down, self._image["FlappyGreen"], "blueShot", 10, 10),
             "FlappyRed": (1, self.move_down, self._image["FlappyRed"], "blueShot", 10, 10),
             "FlappyStealth": (1, self.move_down, self._image["FlappyStealth"], "blueShot", 10, 10),
-            "FlappyWhite": (1, self.move_down, self._image["FlappyWhite"], "blueShot", 10, 10),
+            "FlappyWhite": (2, self.move_down, self._image["FlappyWhite"], "blasterGreen", 20, 15),
+            "FlappyWhite2": (2, self.move_down, self._image["FlappyWhite"], "blasterGreen2", 20, 15),
             "GreenSpark": (1, self.move_down, self._image["GreenSpark"], "blueShot", 10, 10),
-            "Hammer": (1, self.move_down, self._image["hammer"], "blueShot", 10, 10),
-            "Metal1": (1, self.move_down, self._image["metal_1"], "blueShot", 10, 10),
+            "Hammer": (1, self.move_down, self._image["hammer"], "explosion", 10, 10),
+            "Metal1": (1, self.zig, self._image["metal_1"], "rayGreen", 10, 10),
             "MetalSquid": (1, self.move_down, self._image["MetalSquid"], "blueShot", 10, 10),
             "RedMetalSquid": (1, self.move_down, self._image["RedMetalSquid"], "blueShot", 10, 10)
         }

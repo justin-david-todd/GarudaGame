@@ -1,7 +1,9 @@
 # Author: Justin David Todd
 # Last Modified: 01/31/2021
-# Description: This class holds the internal settings for the GarudaGame
-#   such as window size, FPS, background, etc.
+# Description: This class stores and initializes all existing player ships,
+# enemy ships, and lasers. Keeps track of current score.
+# Contains functions for enemy spawn patterns and constructed levels
+# for user to play.
 
 from ships import *
 import random
@@ -60,7 +62,7 @@ class GarudaGame:
 
     def get_current_level(self):
         """Returns the current level"""
-        return self.get_current_level()
+        return self._current_level
 
     def get_enemies(self):
         """Returns the list of all active enemies"""
@@ -99,9 +101,11 @@ class GarudaGame:
 
     def next_level(self):
         """Loads the next level in level_sequence and increments the current level."""
-        self._level_sequence[self._current_level]()
-        if self._current_level < len(self._level_sequence)-1:
-            self._current_level += 1
+        if self._current_level < len(self._level_sequence) - 1:
+            self._level_sequence[self._current_level]()
+        else:
+            self._level_sequence[-1]()
+        self._current_level += 1
 
     def spawn_player(self):
         """Creates a new Player object in the lower center of the screen."""
@@ -288,20 +292,85 @@ class GarudaGame:
                 self.spawn_enemy(self.get_width()-right_indent - spacing * spawn, -distance, body2)
 
     # Collection of Game Levels
+    # Waves should be spaced by a distance of 600 to 800
     def level_one(self):
         """spawns enemies for level 1"""
         # WAVE 1
-        self.spawn_column(-100, 64, "Squid", "Block")
-        self.spawn_random_rain(-228, 5, "Squid")
+        self.spawn_split(64, "Squid")
+        self.spawn_row(128, "Squid")
+
         # WAVE 2
-        self.spawn_random_rain(200, 10, "Squid")
-        self.spawn_random_rain(264, 10, "Squid")
+        self.spawn_row(828, "Squid", "Block")
+        self.spawn_split(892, "Squid")
+        self.spawn_split(1020, "Squid")
+        self.spawn_random_rain(1020, 3, "ArrowStealth")
+
+        # WAVE 3
+        self.spawn_random_rain(1720, 5, "ArrowStealth")
+        self.spawn_random_rain(1740, 5, "ArrowStealth")
+        self.spawn_random_rain(1760, 5, "ArrowStealth")
+        self.spawn_split(1720, "Block")
+        self.spawn_split(1784, "Squid")
+        self.spawn_random_rain(1912, 2, "Metal1")
+        self.spawn_random_rain(1978, 2, "Metal1")
 
     def level_two(self):
-        """spawns enemies for level 1"""
-        self.spawn_block(900, "Metal1")
+        """spawns enemies for level 2"""
+        # WAVE 1
+        self.spawn_split(64, "Squid")
+        self.spawn_split(128, "Squid")
+        self.spawn_split(128+64, "Metal1")
+        self.spawn_random_rain(128, 5, "ArrowStealth")
+        self.spawn_random_rain(148 * 4, 5, "ArrowStealth")
+        self.spawn_random_rain(168 * 7, 5, "ArrowStealth")
+
+        # WAVE 2
+        self.spawn_centipede_left(400, "CentiheadPanda", "CentiBlue", "CentiGreen")
+        self.spawn_centipede_right(464, "CentiheadRed", "CentiPurple", "CentiRed")
+        self.spawn_column(1020, 64, "FlappyWhite")
+        self.spawn_column(1020, 800-128, "FlappyWhite2")
+        self.spawn_column(1920, 128, "FlappyWhite")
+        self.spawn_column(1920, 800 - 192, "FlappyWhite2")
+        self.spawn_v(1420, "Block")
+        self.spawn_v(1620, "Block")
+
+    def level_three(self):
+        """spawns enemies for level 3"""
+        self.spawn_enemy(368, -64, "Hammer")
+        self.spawn_enemy(300-64, -664, "Hammer")
+        self.spawn_enemy(500, -664, "Hammer")
+        self.spawn_random_rain(800, 10, "Hammer")
+        self.spawn_random_rain(832, 10, "Hammer")
+        self.spawn_random_rain(864, 10, "Hammer")
+        self.spawn_random_rain(880, 10, "Hammer")
+        self.spawn_random_rain(900, 10, "Hammer")
+
+    def level_four(self):
+        """spawns enemies for level 4"""
+        self.spawn_centipede_right(0, "CentiheadDud", "CentiheadDud", "CentiheadDud")
+        self.spawn_centipede_right(64, "CentiheadDud", "CentiheadDud", "CentiheadDud")
+        self.spawn_v(128, "CentiheadDud")
+
+    def level_heck(self):
+        """spawns an endless supply of impossible enemies."""
+        # Wave 1
+        self.spawn_block(64, "Squid")
+        self.spawn_random_rain(820, 5, "ArrowStealth")
+
+        # Wave 2
+        self.spawn_centipede_right(664, "CentiheadDud", "CentiheadDud", "CentiheadDud", 10)
+        self.spawn_centipede_right(728, "CentiheadDud", "CentiheadDud", "CentiheadDud", 10)
+        self.spawn_centipede_right(728+64, "CentiheadDud", "CentiheadDud", "CentiheadDud", 10)
+        self.spawn_random_rain(780, 6, "Metal1")
+        self.spawn_random_rain(820, 6, "Metal1")
+
+        # Wave 3
+        self.spawn_block(3020, "Block")
 
     def load_levels(self):
         """Loads the order that the player will play through each level"""
-        self._level_sequence.append(self.level_one)
-        self._level_sequence.append(self.level_two)
+        # self._level_sequence.append(self.level_one)
+        # self._level_sequence.append(self.level_two)
+        self._level_sequence.append(self.level_three)
+        self._level_sequence.append(self.level_four)
+        self._level_sequence.append(self.level_heck)

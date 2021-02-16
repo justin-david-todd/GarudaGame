@@ -1,7 +1,9 @@
 # Author: Justin David Todd
 # Last Modified: 02/04/2021
-# Description: This System class represents the running game console.
-#   Holds system's "ON" status and stores/retrieves game saves, high scores, etc.
+# Description: This Config class represents the running game console.
+#   Holds system's "ON" status and stores/retrieves menu images, backgrounds,
+#   window attributes, icons, fps, etc.
+#   Music, Game saves and High scores would also be stored in this class.
 import pygame
 pygame.font.init()
 
