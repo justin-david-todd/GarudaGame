@@ -4,13 +4,16 @@ My focus is to make the game's ships, lasers, and levels modular so their attrib
 
 Features I have included:
 
+***Download****
+- Download the code and run the .exe file to play Garuda v1.0 on any computer!
+- I increased the power of player lasers to take down enemies in one shot to make the game more beatable.
+
 ***System Features***
 - No Global Variables: All attributes used by objects are stored as private data members.
 - GarudaGame class: One class to instantiate a new game which contains all objects (ships, lasers, etc.) the user will interact with.
 - Game modularized - Object classes in separate files for better organization.
 - A Title Screen with "Quit" and "New Game"
 - Point System keeps track of the player's score as they play.
-
 
 ***Level Features***
 - Level Sequence: Stores game levels in order, so that the player naturally progresses from one level to the next.
@@ -28,7 +31,6 @@ Features I have included:
 - Added Variety of Enemy Laser types and Movement patterns
 
 ***Upcoming Features***
-- Downloadable .exe file format
 - Multiple Lives
 - Saving Progress and High Scores
 - Ship power ups
