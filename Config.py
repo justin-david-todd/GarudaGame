@@ -36,6 +36,7 @@ class Config:
             "main": pygame.font.SysFont('comicsansms', self.get_height()//16),
             "lost": pygame.font.SysFont('comicsansms', self.get_height()//10),
             "sub menu": pygame.font.SysFont('comicsansms', self.get_height()//12),
+            "sub title": pygame.font.SysFont('comicsansms', self.get_height() // 24),
             "title": pygame.font.SysFont('comicsansms', self.get_height()//5)
         }
 

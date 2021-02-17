@@ -238,18 +238,20 @@ class GarudaGame:
             else:
                 self.spawn_enemy(last_x + spacing * spawn, last_y - 64 * spawn, species)
 
-    def spawn_random_rain(self, distance, quantity, species):
+    def spawn_random_rain(self, distance, waves, species, quantity=1):
         """
-        Takes a distance value, quantity, and a species. spaces the specified
-        quantity of single enemies of that species about 800px apart (height),
+        Takes a distance value, number of waves, and species.
+        Takes an optional argument to specify quantity.
+        Creates the specified quantity of single enemies repeated in waves about 800px apart (height),
         assigning them a random x coordinate.
         Starting distance of first enemy is specified distance.
         """
         random.seed()
         ship_width = Enemy(0, 0, [], species).get_width()
         spacing = 800
-        for spawn in range(quantity):
-            self.spawn_enemy(random.randint(0, self.get_width()-ship_width), -distance-spacing*spawn, species)
+        for spawn in range(waves):
+            for duplicates in range(quantity):
+                self.spawn_enemy(random.randint(0, self.get_width()-ship_width), -distance-spacing*spawn, species)
 
     def spawn_centipede_left(self, distance, head, body1, body2, length=None):
         """ Takes a spawn distance, a head, and two body part enemies.
@@ -339,11 +341,14 @@ class GarudaGame:
         self.spawn_enemy(368, -64, "Hammer")
         self.spawn_enemy(300-64, -664, "Hammer")
         self.spawn_enemy(500, -664, "Hammer")
-        self.spawn_random_rain(800, 10, "Hammer")
-        self.spawn_random_rain(832, 10, "Hammer")
-        self.spawn_random_rain(864, 10, "Hammer")
-        self.spawn_random_rain(880, 10, "Hammer")
-        self.spawn_random_rain(900, 10, "Hammer")
+        self.spawn_random_rain(1200, 8, "Hammer", 5)
+        self.spawn_random_rain(1300, 8, "Hammer", 5)
+        self.spawn_random_rain(1400, 8, "Hammer", 5)
+        self.spawn_random_rain(1500, 8, "Hammer", 5)
+        self.spawn_random_rain(1600, 8, "Hammer", 5)
+        self.spawn_random_rain(1700, 8, "Hammer", 5)
+        self.spawn_random_rain(1800, 8, "Hammer", 5)
+        self.spawn_random_rain(1900, 8, "Hammer", 5)
 
     def level_four(self):
         """spawns enemies for level 4"""
@@ -369,8 +374,8 @@ class GarudaGame:
 
     def load_levels(self):
         """Loads the order that the player will play through each level"""
-        # self._level_sequence.append(self.level_one)
-        # self._level_sequence.append(self.level_two)
+        self._level_sequence.append(self.level_one)
+        self._level_sequence.append(self.level_two)
         self._level_sequence.append(self.level_three)
         self._level_sequence.append(self.level_four)
         self._level_sequence.append(self.level_heck)

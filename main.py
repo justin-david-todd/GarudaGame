@@ -206,6 +206,8 @@ def main():
             game_title = sys.font("title").render("Garuda", True, (255, 255, 100))
             game_title2 = sys.font("sub menu").render("New Game", True, (255, 255, 255))
             game_title3 = sys.font("sub menu").render("Quit", True, (255, 255, 255))
+            game_title4 = sys.font("sub title").render("SpaceBar to Shoot. Arrow Keys to Move.", True, (255, 255, 255))
+            game_title5 = sys.font("sub title").render("Created by Justin David Todd", True, (255, 255, 255))
             cursor = sys.get_image("main_ship")
             cursor_position = sys.get_height()*3//4 - sys.get_height()//10 + select_option*sys.get_height()//8
 
@@ -217,6 +219,10 @@ def main():
                                                 sys.get_height()*3//4 - sys.get_height()//10))
             sys.get_window().blit(game_title3, (sys.get_width() // 2 - game_title2.get_width() // 2,
                                                 sys.get_height() * 3 // 4))
+            sys.get_window().blit(game_title4, (sys.get_width() // 2 - game_title4.get_width() // 2,
+                                                sys.get_height()-100))
+            sys.get_window().blit(game_title5, (sys.get_width() // 2 - game_title5.get_width() // 2,
+                                                20))
             sys.get_window().blit(cursor, (sys.get_width()//2 - game_title2.get_width()*11//14,
                                            cursor_position))
             pygame.display.update()

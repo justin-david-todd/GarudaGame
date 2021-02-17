@@ -399,7 +399,7 @@ class Enemy(Ship):
             "FlappyWhite": (2, self.move_down, self._image["FlappyWhite"], "blasterGreen", 20, 15),
             "FlappyWhite2": (2, self.move_down, self._image["FlappyWhite"], "blasterGreen2", 20, 15),
             "GreenSpark": (1, self.move_down, self._image["GreenSpark"], "blueShot", 10, 10),
-            "Hammer": (1, self.move_down, self._image["hammer"], "explosion", 10, 10),
+            "Hammer": (3, self.move_down, self._image["hammer"], "explosion", 10, 10),
             "Metal1": (1, self.zig, self._image["metal_1"], "rayGreen", 10, 10),
             "MetalSquid": (1, self.move_down, self._image["MetalSquid"], "blueShot", 10, 10),
             "RedMetalSquid": (1, self.move_down, self._image["RedMetalSquid"], "blueShot", 10, 10)
