@@ -52,7 +52,7 @@ class Laser:
         self._laser_type = {
             # "laser_type" : (damage, velocity, cool_down, laser_img, move_pattern)
             "green": (10, 10, 15, self._image["green_laser"], self.normal),
-            "player_green": (10, -10, 15, self._image["green_blast"], self.normal),
+            "player_green": (100, -10, 15, self._image["green_blast"], self.normal),
             "explosion": (30, 10, 15, self._image["explosion"], self.delayed),
             "explosion_zero": (0, 10, 15, self._image["explosion"], self.delayed),
             "lightning": (30, 30, 5, self._image["lightning"], self.normal),
